@@ -30,9 +30,9 @@ variable "node_pool" {
   description = "Collection of node pool objects to provision for workloads to run on."
   type = map(object({
     vm_size         = string,
-    priority       = string,
-    eviction_policy = string,
-    mode           = string,
+    priority       = string, #Regular or Spot
+    eviction_policy = string, #Delete
+    mode           = string, #User or System
     min_nodes       = number,
     max_nodes       = number,
     auto_scaling    = bool,
@@ -74,4 +74,30 @@ variable "pod_cidr" {
 variable "acr" {
   description = "Map of Container Registry to allow pull from. Expected format is { acr_name = acr_rg }"
   type = map
+}
+
+
+variable "vnet" {
+  description = "Name of the VNet where the cluster must be provisioned."
+  type = string
+}
+
+variable "rg_vnet" {
+  description = "Name of the existing VNet resource group where the cluster must be provisioned."
+  type = string
+}
+
+variable "snet" {
+  description = "Name of the existing Subnet where the cluster nodes will be provisioned."
+  type = string
+}
+
+variable "law" {
+  description = "Name of the existing Log Analytics Workspace to link your cluster with."
+  type = string
+}
+
+variable "rg_law" {
+  description = "Name of the existing resource group for the Log Analytics Workspace."
+  type = string
 }

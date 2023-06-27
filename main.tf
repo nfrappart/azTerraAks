@@ -53,7 +53,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
   dns_prefix = var.cluster_name
-  kubernetes_version         = var.k8sVersion
+  kubernetes_version         = var.k8s_version
 
   default_node_pool {
     name                = "system"
@@ -71,10 +71,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   network_profile {
     network_plugin     = "azure"
-    network_plugin_mode = "Overlay"
+    network_plugin_mode = "overlay"
     pod_cidr = var.pod_cidr
-    service_cidr       = var.serviceCidr
-    dns_service_ip     = cidrhost(var.serviceCidr, 10)
+    service_cidr       = var.service_cidr
+    dns_service_ip     = cidrhost(var.service_cidr, 10)
   }
 
   sku_tier = var.sku
