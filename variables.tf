@@ -105,7 +105,7 @@ variable "pod_cidr" {
 }
 
 variable "acr" {
-  description = "Map of Container Registry to allow pull from. Expected format is { acr_name = acr_rg }"
+  description = "Map of Container Registry to allow pull from. If ACR not in same subscription, leave empty and assign role outside module. Expected format is { acr_name = acr_rg }."
   type = map
 }
 
