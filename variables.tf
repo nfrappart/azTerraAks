@@ -31,7 +31,7 @@ variable "node_pool" {
   type = map(object({
     vm_size         = string,
     priority       = string, #Regular or Spot
-    eviction_policy = string, #Delete
+    eviction_policy = string, #Deallocate or Delete
     mode           = string, #User or System
     min_nodes       = number,
     max_nodes       = number,
@@ -44,6 +44,21 @@ variable "node_pool" {
   validation {
     condition     = can({ for k, v in var.node_pool : regex("[0-9a-z]", k) => v }) || var.node_pool == {}
     error_message = "Node pool name must be lowercase alphanum."
+  }
+
+  validation {
+    condition = alltrue([ for k, v in var.node_pool  : contains(["Spot", "Regular"], v.priority) ])
+    error_message = "Node pool priority allowed value are either \"Spot\" or \"Regular\"."
+  }
+
+  validation {
+    condition = alltrue([ for k, v in var.node_pool  : contains(["User", "System"], v.mode) ])
+    error_message = "Node pool can be either in \"User\" or \"System\" mode."
+  }
+
+  validation {
+    condition = alltrue([ for k, v in var.node_pool  : contains(["Deallocate", "Delete"], v.eviction_policy) ])
+    error_message = "When using Spot instances, please choose between \"Deallocate\" or \"Delete\" for eviction policy."
   }
 }
 
@@ -63,19 +78,36 @@ variable "service_cidr" {
   description = "CIDR block used for kubernetes services."
   type        = string
   default     = "172.19.0.0/16"
+
+  validation {
+    condition     = anytrue([
+      can(regex("10(?:\\.(?:[0-1]?[0-9]?[0-9])|(?:2[0-5]?[0-9])){3}\\/", var.service_cidr)),
+      can(regex("172\\.(?:1[6-9]|2[0-9]|3[0-1])(?:\\.[0-2]?[0-5]?[0-9]){2}\\/(?:1[2-9]|2[0-9]|3[0-2])", var.service_cidr)),
+      can(regex("192\\.168(?:\\.[0-2]?[0-5]?[0-9]){2}\\/(?:1[6-9]|2[0-9]|3[0-2])", var.service_cidr)),
+      ])
+    error_message = "Must be a valid IPv4 RFC1918 CIDR block."
+  }
 }
 
 variable "pod_cidr" {
   description = "CIDR block used for pods."
   type = string
   default = "172.17.0.0/16"
+
+  validation {
+    condition     = anytrue([
+      can(regex("10(?:\\.(?:[0-1]?[0-9]?[0-9])|(?:2[0-5]?[0-9])){3}\\/", var.pod_cidr)),
+      can(regex("172\\.(?:1[6-9]|2[0-9]|3[0-1])(?:\\.[0-2]?[0-5]?[0-9]){2}\\/(?:1[2-9]|2[0-9]|3[0-2])", var.pod_cidr)),
+      can(regex("192\\.168(?:\\.[0-2]?[0-5]?[0-9]){2}\\/(?:1[6-9]|2[0-9]|3[0-2])", var.pod_cidr)),
+      ])
+    error_message = "Must be a valid IPv4 RFC1918 CIDR block."
+  }
 }
 
 variable "acr" {
   description = "Map of Container Registry to allow pull from. Expected format is { acr_name = acr_rg }"
   type = map
 }
-
 
 variable "vnet" {
   description = "Name of the VNet where the cluster must be provisioned."

@@ -6,6 +6,14 @@ output "cluster_rg" {
   value = azurerm_kubernetes_cluster.aks.resource_group_name
 }
 
+output "cluster_identities" {
+  value = azurerm_kubernetes_cluster.aks.identity
+}
+
+output "kubelet_identity" {
+  value = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+}
+
 output "host" {
   value = azurerm_kubernetes_cluster.aks.kube_admin_config.0.host
 }

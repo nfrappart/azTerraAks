@@ -21,6 +21,7 @@ data "azurerm_virtual_network" "vnet" {
   name = var.vnet
   resource_group_name = var.rg_vnet
 }
+
 data "azurerm_subnet" "aks" {
   name                 = var.snet
   virtual_network_name = data.azurerm_virtual_network.vnet.name
